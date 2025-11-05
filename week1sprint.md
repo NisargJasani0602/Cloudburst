@@ -3,12 +3,6 @@
 ## 🎯 Sprint Goal
 Set up the foundational DevOps pipeline components to enable automated builds, testing, and deployment for the hybrid cloud-bursting system described in the proposal.
 
----
-
-## 🧩 User Story
-**As a DevOps Engineer**, I want to set up a CI/CD pipeline with automatic linting, testing, deployment, and monitoring triggers, **so that** our hybrid system can scale seamlessly between on-prem and cloud environments during traffic bursts.
-
----
 
 ## ✅ To-Do Checklist (Week 1 Tasks)
 
