@@ -35,6 +35,6 @@ jobs:
           push: true
           
           tags: |
-            packages.github.ncsu.edu/snagda/CloudBurst:latest
-            packages.github.ncsu.edu/snagda/CloudBurst:0.1
-            packages.github.ncsu.edu/snagda/CloudBurst:${{ github.sha }}
+            packages.github.ncsu.edu/snagda/cloudburst:latest
+            packages.github.ncsu.edu/snagda/cloudburst:0.1
+            packages.github.ncsu.edu/snagda/cloudburst:${{ github.sha }}
