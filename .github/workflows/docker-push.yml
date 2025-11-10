@@ -1,0 +1,40 @@
+name: Build and Push Docker Image
+
+# Triggers on a push to any 'release/' branch
+# This will run when you merge your PR into 'release/0.1'
+on:
+  push:
+    branches:
+      - 'release/**'
+
+jobs:
+  build-and-push:
+    name: Build and Push to GHCR
+    runs-on: self-hosted
+
+    # CRITICAL: Grant write permissions to push to GHCR (Packages)
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.ncsu.edu/snagda/CloudBurst
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./coffee-project-main
+          push: true
+          
+          tags: |
+            ghcr.ncsu.edu/snagda/CloudBurst:latest
+            ghcr.ncsu.edu/snagda/CloudBurst:0.1
+            ghcr.ncsu.edu/snagda/CloudBurst:${{ github.sha }}
