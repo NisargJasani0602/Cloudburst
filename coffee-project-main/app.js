@@ -4,7 +4,6 @@ const express = require('express');
 const { coffees, orders } = require('./data');
 
 const app = express();
-const PORT = 3000;
 
 app.use(express.json());
 app.use(express.static('public')); 
@@ -42,6 +41,3 @@ app.get('/orders', (req, res) => {
   res.json(orders);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server started on http://localhost:${PORT}`);
-});
