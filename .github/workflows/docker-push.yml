@@ -10,8 +10,9 @@ jobs:
     name: Build and Push to Docker Hub
     runs-on: self-hosted
 
-    # We only run the job if the secrets are present
-    if: secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN
+    # The 'if' condition was removed from here, as it's invalid YAML syntax
+    # in this context. The login step will fail if secrets are missing,
+    # which is the correct behavior.
 
     steps:
       - name: Checkout code
