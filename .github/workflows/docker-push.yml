@@ -1,18 +1,21 @@
 name: Build and Push Docker Image
 
-# Triggers on a push to any 'release/' branch
-# This will run when you merge your PR into 'release/0.1'
 on:
   push:
     branches:
       - 'release/**'
+
+# Set environment variables for the image name
+# This makes it easy to manage and forces lowercase
+env:
+  REGISTRY_URL: packages.github.ncsu.edu
+  IMAGE_NAME: ${{ github.repository_owner }}/cloudburst
 
 jobs:
   build-and-push:
     name: Build and Push to GHCR
     runs-on: self-hosted
 
-    # CRITICAL: Grant write permissions to push to GHCR (Packages)
     permissions:
       contents: read
       packages: write
@@ -24,17 +27,26 @@ jobs:
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-          registry: packages.github.ncsu.edu/snagda/CloudBurst
+          registry: ${{ env.REGISTRY_URL }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+          # This is the new, important line for GHE:
+          github-server-url: https://github.ncsu.edu
 
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: ./coffee-project-main
-          push: true
-          
-          tags: |
-            packages.github.ncsu.edu/snagda/cloudburst:latest
-            packages.github.ncsu.edu/snagda/cloudburst:0.1
-            packages.github.ncsu.edu/snagda/cloudburst:${{ github.sha }}
+      - name: Lowercase image name
+        # Docker images must be lowercase, this ensures it
+        run: echo "IMAGE_NAME_LC=$(echo $IMAGE_NAME | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
+
+      - name: Build Docker image
+        run: |
+          # Build the image with all our tags
+          docker build \
+            -t ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }}:latest \
+            -t ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }}:0.1 \
+            -t ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }}:${{ github.sha }} \
+            ./coffee-project-main
+
+      - name: Push Docker image
+        run: |
+          # Push all tags to the registry
+          docker push ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }} --all-tags
