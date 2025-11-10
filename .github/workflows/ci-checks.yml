@@ -1,0 +1,36 @@
+name: CI Checks (Lint & Test)
+
+# Triggers on pull requests targeting main or release branches
+on:
+  pull_request:
+    branches:
+      - main
+      - "release/**" # Matches release/0.1 and future release branches
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        # Set the working directory to your project's subfolder
+        working-directory: ./coffee-project-main
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18" # Or whatever version you prefer
+          cache: "npm"
+          cache-dependency-path: coffee-project-main/package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        # This 'test' script is from your package.json
+        run: npm test
