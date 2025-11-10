@@ -46,7 +46,9 @@ jobs:
             -t ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }}:${{ github.sha }} \
             ./coffee-project-main
 
-      - name: Push Docker image
+      - name: Push Docker image (one tag at a time)
         run: |
-          # Push all tags to the registry
-          docker push ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }} --all-tags
+          # Push tags one by one for GHE compatibility
+          docker push ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }}:latest
+          docker push ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }}:0.1
+          docker push ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }}:${{ github.sha }}
