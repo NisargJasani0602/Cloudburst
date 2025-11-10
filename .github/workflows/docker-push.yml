@@ -5,46 +5,35 @@ on:
     branches:
       - 'release/**'
 
-# Set environment variables for the image name
-# This makes it easy to manage and forces lowercase
-env:
-  REGISTRY_URL: packages.github.ncsu.edu
-  IMAGE_NAME: ${{ github.repository_owner }}/cloudburst
-
 jobs:
   build-and-push:
-    name: Build and Push to GHCR
+    name: Build and Push to Docker Hub
     runs-on: self-hosted
 
-    permissions:
-      contents: read
-      packages: write
+    # We only run the job if the secrets are present
+    if: secrets.DOCKERHUB_USERNAME && secrets.DOCKERHUB_TOKEN
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        # We are now using your new, powerful GH_PAT secret
-        # instead of the weaker, automatic GITHUB_TOKEN
-        run: echo "${{ secrets.GH_PAT }}" | docker login ${{ env.REGISTRY_URL }} -u ${{ github.actor }} --password-stdin
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      - name: Lowercase image name
-        # Docker images must be lowercase, this ensures it
-        run: echo "IMAGE_NAME_LC=$(echo $IMAGE_NAME | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
-      - name: Build Docker image
+      - name: Build and Push to Docker Hub
         run: |
-          # Build the image with all our tags
+          # Define the image name, forcing lowercase
+          # This will be in the format: "your-dockerhub-username/cloudburst"
+          IMAGE_NAME_LC=$(echo "${{ secrets.DOCKERHUB_USERNAME }}/cloudburst" | tr '[:upper:]' '[:lower:]')
+
+          # Build the image
           docker build \
-            -t ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }}:latest \
-            -t ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }}:0.1 \
-            -t ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }}:${{ github.sha }} \
+            -t $IMAGE_NAME_LC:latest \
+            -t $IMAGE_NAME_LC:0.1 \
+            -t $IMAGE_NAME_LC:${{ github.sha }} \
             ./coffee-project-main
 
-      - name: Push Docker image (one tag at a time)
-        run: |
-          # Push tags one by one for GHE compatibility
-          docker push ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }}:latest
-          docker push ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }}:0.1
-          docker push ${{ env.REGISTRY_URL }}/${{ env.IMAGE_NAME_LC }}:${{ github.sha }}
+          # Push the tags one by one to Docker Hub
+          docker push $IMAGE_NAME_LC:latest
+          docker push $IMAGE_NAME_LC:0.1
+          docker push $IMAGE_NAME_LC:${{ github.sha }}
