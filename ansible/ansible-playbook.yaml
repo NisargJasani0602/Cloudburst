@@ -1,0 +1,40 @@
+---
+- name: Demo Playbook
+  hosts: myserver
+  gather_facts: true
+  become: true
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+
+  pre_tasks:
+    - name: Add Nodesource signing key
+      ansible.builtin.apt_key:
+        url: https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key
+        state: present
+
+    - name: Add Nodesource repo for Node 20
+      ansible.builtin.apt_repository:
+        repo: "deb https://deb.nodesource.com/node_20.x {{ ansible_distribution_release }} main"
+        state: present
+        filename: nodesource
+
+    - name: Install Node.js, Nginx and build essentials
+      ansible.builtin.apt:
+        name:
+          - nodejs
+          - nginx
+          - curl
+          - build-essential
+        state: present
+        update_cache: true
+
+  tasks:
+    - name: Ensure Nginx service is enabled and running
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true

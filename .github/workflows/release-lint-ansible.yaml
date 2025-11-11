@@ -1,0 +1,67 @@
+name: release-lint-ansible
+on:
+  pull_request:
+    branches: ["main", "dev", "release/**", "feature/**"]
+    paths:
+      - "ansible/**"
+      - ".github/workflows/release-lint-ansible.yaml"
+jobs:
+  build:
+    name: Ansible Lint # Naming the build to use it as a status check
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run ansible-lint
+        uses: ansible/ansible-lint@v25.8.2
+        with:
+          path: ansible
+          args: "-p -v"
+
+      - name: Install yamllint (for YAML sanity checks)
+        run: |
+          python3 -m pip install --upgrade pip
+          pip3 install "yamllint>=1.35,<2"
+          mkdir -p reports
+
+      - name: Run yamllint
+        run: |
+          echo "Running yamllint..."
+          yamllint -s ansible > reports/yamllint.txt
+
+      - name: Syntax-check all playbooks
+        run: |
+          set -euo pipefail
+          mkdir -p reports
+          inventory="ansible/hosts.ini"
+          if [ ! -f "$inventory" ]; then
+            echo "hosts.ini not found at $inventory" | tee reports/syntax-check.txt
+            exit 1
+          fi
+
+          shopt -s nullglob
+          playbooks=(ansible/*.yml ansible/*.yaml)
+          shopt -u nullglob
+
+          if [ ${#playbooks[@]} -eq 0 ]; then
+            echo "No Ansible playbooks found inside ansible/; skipping syntax check." | tee reports/syntax-check.txt
+            exit 0
+          fi
+
+          failed=0
+          : > reports/syntax-check.txt
+          for playbook in "${playbooks[@]}"; do
+            echo "Checking syntax for $playbook" | tee -a reports/syntax-check.txt
+            if ! ansible-playbook -i "$inventory" "$playbook" --syntax-check >> reports/syntax-check.txt 2>&1; then
+              failed=1
+            fi
+          done
+
+          exit $failed
+
+      - name: Upload lint reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ansible-lint-reports
+          path: reports/**
+          if-no-files-found: warn
