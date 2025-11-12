@@ -1,0 +1,35 @@
+# cloudburst.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudburst
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: cloudburst }
+  template:
+    metadata:
+      labels: { app: cloudburst }
+    spec:
+      imagePullSecrets:
+        - name: regcred         # <-- use the secret you created
+      containers:
+        - name: app
+          image: jinish08/cloudburst:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3000
+          # env: []            # add any needed env vars here
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudburst
+spec:
+  type: NodePort
+  selector:
+    app: cloudburst
+  ports:
+    - name: http
+      port: 80
+      targetPort: 3000
