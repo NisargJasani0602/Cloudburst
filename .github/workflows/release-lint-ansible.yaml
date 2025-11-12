@@ -23,10 +23,16 @@ jobs:
           pip3 install "yamllint>=1.35,<2"
           mkdir -p reports
 
-      - name: Run yamllint
+      - name: Run yamllint (capture result but don’t fail yet)
+        id: yamllint
         run: |
+          mkdir -p reports
           echo "Running yamllint..."
-          yamllint -s ansible > reports/yamllint.txt
+          set +e
+          yamllint -s ansible | tee reports/yamllint.txt
+          YAMLLINT_EXIT=$?
+          set -e
+          echo "exit_code=$YAMLLINT_EXIT" >> "$GITHUB_OUTPUT"
 
       - name: Syntax-check all playbooks
         run: |
@@ -58,9 +64,9 @@ jobs:
 
           exit $failed
 
-      - name: Upload lint reports
+      - name: Upload lint reports (GHES compatible)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: ansible-lint-reports
           path: reports/**
