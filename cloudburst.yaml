@@ -3,33 +3,69 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: cloudburst
+  namespace: cloudburst
 spec:
-  replicas: 1
+  replicas: 3                    # start with 3 replicas
   selector:
-    matchLabels: { app: cloudburst }
+    matchLabels:
+      app: cloudburst
   template:
     metadata:
-      labels: { app: cloudburst }
+      labels:
+        app: cloudburst
     spec:
       imagePullSecrets:
-        - name: regcred         # <-- use the secret you created
+        - name: regcred          # secret for private DockerHub
       containers:
         - name: app
           image: jinish08/cloudburst:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3000
-          # env: []            # add any needed env vars here
+          resources:
+            # HPA needs requests to calculate utilization
+            requests:
+              cpu: "200m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: cloudburst
+  namespace: cloudburst
 spec:
-  type: NodePort
+  type: NodePort                 # keep NodePort for now; LB + tunnel also works
   selector:
     app: cloudburst
   ports:
     - name: http
       port: 80
       targetPort: 3000
+      # you can pin nodePort here if you want a fixed one:
+      # nodePort: 31702
+
+---
+# Horizontal Pod Autoscaler
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: cloudburst
+  namespace: cloudburst
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: cloudburst
+  minReplicas: 3                  # never go below 3
+  maxReplicas: 5                  # never go above 5
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70  # if avg CPU > 70% across pods, scale up
