@@ -1,0 +1,40 @@
+name: CloudBurst - Scale Down (VCL)
+
+on:
+  workflow_dispatch:          # manual trigger from GitHub UI
+  repository_dispatch:        # optional external trigger (e.g., webhook)
+    types: [cloudburst_unburst]
+
+jobs:
+  unburst:
+    name: Scale Down CloudBurst Deployment on VCL
+    runs-on: self-hosted      # your VCL GitHub runner
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure kubectl for VCL cluster
+        run: |
+          mkdir -p "$HOME/.kube"
+          echo "${{ secrets.KUBECONFIG_CONTENTS }}" > "$HOME/.kube/config"
+          chmod 600 "$HOME/.kube/config"
+          echo "Current context:"
+          kubectl config current-context
+          echo "Cluster nodes:"
+          kubectl get nodes -o wide
+
+      - name: Unburst CloudBurst on VCL (scale down)
+        run: |
+          echo "Scaling CloudBurst deployment in VCL cluster back to 3 replicas..."
+          kubectl -n cloudburst scale deployment cloudburst --replicas=3
+
+      - name: Wait for rollout to finish
+        run: |
+          echo "Waiting for CloudBurst rollout..."
+          kubectl -n cloudburst rollout status deployment/cloudburst --timeout=90s
+          echo "Current CloudBurst pods on VCL:"
+          kubectl -n cloudburst get pods -o wide
+
+      - name: Notify
+        run: echo "✅ VCL Unburst Triggered — CloudBurst scaled DOWN to 3 replicas on VCL."
