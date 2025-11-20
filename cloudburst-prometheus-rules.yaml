@@ -1,0 +1,35 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: cloudburst-overload-rules
+  namespace: monitoring
+spec:
+  groups:
+    - name: cloudburst-overload
+      rules:
+        - alert: CloudburstAtMaxCapacity
+          expr: |
+            kube_deployment_status_replicas{namespace="cloudburst",deployment="cloudburst"} == 5
+            and
+            (
+              sum(
+                rate(container_cpu_usage_seconds_total{
+                  namespace="cloudburst",
+                  pod=~"cloudburst-.*"
+                }[2m])
+              )
+              /
+              sum(
+                kube_pod_container_resource_requests_cpu_cores{
+                  namespace="cloudburst",
+                  pod=~"cloudburst-.*"
+                }
+              )
+            ) > 0.7
+          for: 3m
+          labels:
+            severity: critical
+            service: cloudburst
+          annotations:
+            summary: "CloudBurst is at max replicas and still CPU-bound"
+            description: "CloudBurst deployment has 5 replicas and average CPU > 70% for more than 3 minutes. Consider adding more cluster capacity or AWS instances."
