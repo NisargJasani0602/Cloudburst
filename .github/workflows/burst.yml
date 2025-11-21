@@ -17,7 +17,7 @@ jobs:
       - name: Configure kubectl for VCL cluster
         run: |
           mkdir -p "$HOME/.kube"
-          echo "${{ secrets.NEW_KUBECONFIG_CONTENTS }}" > "$HOME/.kube/config"
+          echo "${{ secrets.NEW2_KUBECONFIG_CONTENTS }}" > "$HOME/.kube/config"
           chmod 600 "$HOME/.kube/config"
           echo "Current context:"
           kubectl config current-context
