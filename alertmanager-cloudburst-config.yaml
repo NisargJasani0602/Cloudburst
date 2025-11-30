@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1alpha1
+kind: AlertmanagerConfig
+metadata:
+  name: cloudburst-bursting
+  namespace: monitoring
+spec:
+  route:
+    matchers:
+      - name: alertname
+        matchType: =
+        value: CloudburstAtMaxCapacity
+    receiver: burst-webhook
+    groupBy:
+      - alertname
+    groupWait: 10s
+    groupInterval: 30s
+    repeatInterval: 1h
+
+  receivers:
+    - name: burst-webhook
+      webhookConfigs:
+        - url: http://burst-webhook.monitoring.svc.cluster.local/alert
+          sendResolved: true
