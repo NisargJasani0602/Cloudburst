@@ -3,14 +3,22 @@ kind: PrometheusRule
 metadata:
   name: cloudburst-overload-rules
   namespace: monitoring
+  labels:
+    release: monitoring
 spec:
+  # Define custom alert rules for the on‑premises CloudBurst deployment. When the
+  # HorizontalPodAutoscaler reaches its maximum number of replicas and the
+  # average CPU utilisation across all pods remains above 70 % for three
+  # consecutive minutes, this rule will fire. Alertmanager can then send the
+  # resulting alert to a webhook that will trigger the appropriate GitHub
+  # workflow to scale the VCL cluster up or down.
   groups:
     - name: cloudburst-overload
       rules:
         - alert: CloudburstAtMaxCapacity
           expr: |
             kube_deployment_status_replicas{namespace="cloudburst",deployment="cloudburst"} == 5
-            and
+            AND
             (
               sum(
                 rate(container_cpu_usage_seconds_total{
@@ -25,11 +33,11 @@ spec:
                   pod=~"cloudburst-.*"
                 }
               )
-            ) > 0.7
-          for: 3m
+            ) > 0.5
+          for: 1m
           labels:
             severity: critical
             service: cloudburst
           annotations:
-            summary: "CloudBurst is at max replicas and still CPU-bound"
-            description: "CloudBurst deployment has 5 replicas and average CPU > 70% for more than 3 minutes. Consider adding more cluster capacity or AWS instances."
+            summary: "CloudBurst is at maximum capacity and CPU bound"
+            description: "The CloudBurst deployment has reached 5 replicas and the average CPU utilisation has exceeded 70 % for more than one minute. The on‑prem cluster may be overwhelmed; triggering a burst will scale the VCL cluster."
