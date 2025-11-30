@@ -35,18 +35,20 @@ jobs:
             -t $IMAGE_NAME_LC:${{ github.sha }} \
             ./coffee-project-main
 
-      # 4. Security Scan (Trivy)
-      # This runs between Build and Push.
-      # It fails (exit-code 1) if CRITICAL vulnerabilities are found.
+      # 4. Security Scan (Trivy via Docker)
+      # We run Trivy as a container to avoid GHES checkout issues.
+      # It mounts the docker socket to scan the image we just built.
       - name: Run Trivy Vulnerability Scanner
-        uses: aquasecurity/trivy-action@0.28.0
-        with:
-          image-ref: '${{ env.IMAGE_NAME_LC }}:${{ github.sha }}'
-          format: 'table'
-          exit-code: '1'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'CRITICAL'
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            aquasec/trivy:0.57.1 image \
+            --format table \
+            --exit-code 1 \
+            --severity CRITICAL \
+            --ignore-unfixed \
+            --vuln-type os,library \
+            $IMAGE_NAME_LC:${{ github.sha }}
 
       # 5. Push (Only if Scan Passed)
       - name: Push to Docker Hub
