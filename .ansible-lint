@@ -4,4 +4,4 @@ exclude_paths:
   - .github/workflows/   # Don't lint GitHub Actions files
   - alertmanager-cloudburst-config.yaml
   - cloudburst-prometheus-rules.yaml
-  - "*.yml"              # Optional: Ignore root YAMLs if your playbooks are in ansible/
+  - "*.yml"
