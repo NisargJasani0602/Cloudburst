@@ -34,6 +34,16 @@ jobs:
           set -e
           echo "exit_code=$YAMLLINT_EXIT" >> "$GITHUB_OUTPUT"
 
+      - name: Run Trivy IaC Security Scanner
+        run: |
+          docker run --rm \
+            -v $(pwd):/project \
+            aquasec/trivy:0.57.1 fs /project/ansible \
+            --scanners config \
+            --severity CRITICAL,HIGH \
+            --exit-code 1 \
+            --format table
+
       - name: Syntax-check all playbooks
         run: |
           set -euo pipefail
