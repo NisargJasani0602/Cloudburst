@@ -40,4 +40,7 @@ spec:
             service: cloudburst
           annotations:
             summary: "CloudBurst is at maximum capacity and CPU bound"
-            description: "The CloudBurst deployment has reached 5 replicas and the average CPU utilisation has exceeded 70 % for more than one minute. The on‑prem cluster may be overwhelmed; triggering a burst will scale the VCL cluster."
+            description: |
+             The CloudBurst deployment has reached 5 replicas and
+             the average CPU utilisation has exceeded 70 % for more than one minute.
+             The on‑prem cluster may be overwhelmed; triggering a burst will scale the VCL cluster.

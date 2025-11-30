@@ -13,8 +13,6 @@ repos:
       - id: flake8
         additional_dependencies: []
 
-# Optional: run npm-based lint if package.json exists (local hook)
-repos:
   - repo: local
     hooks:
       - id: eslint

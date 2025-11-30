@@ -1,0 +1,7 @@
+# .ansible-lint
+# Exclude files that are not Ansible playbooks/vars
+exclude_paths:
+  - .github/workflows/   # Don't lint GitHub Actions files
+  - alertmanager-cloudburst-config.yaml
+  - cloudburst-prometheus-rules.yaml
+  - "*.yml"
