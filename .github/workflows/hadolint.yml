@@ -1,0 +1,39 @@
+name: Dockerfile Linting with Hadolint
+
+on:
+  pull_request:
+    branches: [ "main", "dev" ]
+  workflow_dispatch:
+
+jobs:
+  hadolint:
+    name: Run Hadolint on all Dockerfiles
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Install Hadolint (local)
+        run: |
+          mkdir -p ~/.local/bin
+          wget -O ~/.local/bin/hadolint https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-x86_64
+          chmod +x ~/.local/bin/hadolint
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+      - name: Find and Scan Dockerfiles
+        run: |
+          echo "Scanning all Dockerfiles..."
+          files_found=false
+
+          while IFS= read -r -d '' file; do
+            files_found=true
+            echo "----------------------------------------"
+            echo "Scanning: $file"
+            echo "----------------------------------------"
+            hadolint "$file" || true
+          done < <(find . -type f \( -iname "dockerfile" -o -name "Dockerfile" \) -print0)
+
+          if [ "$files_found" = false ]; then
+            echo "No Dockerfiles found."
+          fi
