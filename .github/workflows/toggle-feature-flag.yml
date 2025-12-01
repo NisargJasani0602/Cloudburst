@@ -1,0 +1,56 @@
+name: Toggle Feature Flag
+
+on:
+  workflow_dispatch:
+    inputs:
+      flag:
+        description: "Flag name (ex: enableDiscounts, showSecretMenu)"
+        required: true
+      value:
+        description: "true or false"
+        required: true
+
+jobs:
+  toggle-flag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install jq (JSON editor)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y jq
+
+      - name: Update feature-flags.json
+        id: update-flag
+        run: |
+          echo "Updating flag '${{ github.event.inputs.flag }}' to '${{ github.event.inputs.value }}'"
+          
+          cd coffee-project-main
+
+          jq --arg key "${{ github.event.inputs.flag }}" --argjson val "${{ github.event.inputs.value }}" \
+            '.[$key] = $val' \
+            feature-flags.json > updated.json
+
+          if diff -q feature-flags.json updated.json; then
+            echo "No changes needed; flag already set."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            rm updated.json
+          else
+            mv updated.json feature-flags.json
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and push changes
+        if: steps.update-flag.outputs.changed == 'true'
+        run: |
+          cd coffee-project-main
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add feature-flags.json
+          git commit -m "Feature flag updated: ${{ github.event.inputs.flag }} -> ${{ github.event.inputs.value }}"
+          git push
