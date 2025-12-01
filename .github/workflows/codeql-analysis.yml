@@ -12,7 +12,7 @@ on:
 jobs:
   analyze:
     name: Analyze Repository with CodeQL
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     permissions:
       actions: read
       contents: read
