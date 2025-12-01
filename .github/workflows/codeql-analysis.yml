@@ -1,12 +1,6 @@
 name: "CodeQL Security Analysis"
 
 on:
-  push:
-    branches: [ "main", "dev" ]
-  pull_request:
-    branches: [ "main", "dev" ]
-  schedule:
-    - cron: '0 2 * * 2'   # Weekly Tuesday scan at 2 AM UTC
   workflow_dispatch: {}   # Allow manual trigger
 
 jobs:
