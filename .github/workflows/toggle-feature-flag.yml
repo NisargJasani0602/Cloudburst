@@ -68,23 +68,3 @@ jobs:
           git push origin "$BRANCH_NAME"
           echo "branch=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
 
-      - name: Create pull request
-        if: steps.commit-and-push.outputs.branch != ''
-        env:
-          GH_TOKEN: ${{ secrets.cloudburst }}
-          BASE_BRANCH: main
-          HEAD_BRANCH: ${{ steps.commit-and-push.outputs.branch }}
-        run: |
-          cd coffee-project-main
-          PR_TITLE="Feature flag updated: ${{ github.event.inputs.flag }} -> ${{ github.event.inputs.value }}"
-          PR_BODY="Automated feature flag update triggered by workflow_dispatch."
-
-          jq -n --arg title "$PR_TITLE" --arg head "$HEAD_BRANCH" --arg base "$BASE_BRANCH" --arg body "$PR_BODY" \
-            '{title:$title, head:$head, base:$base, body:$body}' > pr.json
-
-          curl -sS -X POST \
-            -H "Authorization: Bearer $GH_TOKEN" \
-            -H "Accept: application/vnd.github+json" \
-            -H "Content-Type: application/json" \
-            -d @pr.json \
-            "https://api.github.com/repos/${{ github.repository }}/pulls"
