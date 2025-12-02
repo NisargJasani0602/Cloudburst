@@ -3,6 +3,8 @@ name: Dockerfile Linting with Hadolint
 on:
   pull_request:
     branches: [ "main", "dev" ]
+    paths: 
+      - '**/Dockerfile'
   workflow_dispatch:
 
 jobs:
