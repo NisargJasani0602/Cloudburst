@@ -48,7 +48,7 @@ jobs:
             echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Commit and push changes
+      - name: Commit and push changes to dark-launch branch
         if: steps.update-flag.outputs.changed == 'true'
         id: commit-and-push
         env:
@@ -67,4 +67,3 @@ jobs:
           git commit -m "Feature flag updated: ${{ github.event.inputs.flag }} -> ${{ github.event.inputs.value }}"
           git push origin "$BRANCH_NAME"
           echo "branch=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
-
