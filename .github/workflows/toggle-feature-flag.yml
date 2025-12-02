@@ -29,7 +29,7 @@ jobs:
         id: update-flag
         run: |
           echo "Updating flag '${{ github.event.inputs.flag }}' to '${{ github.event.inputs.value }}'"
-          
+
           cd coffee-project-main
 
           jq --arg key "${{ github.event.inputs.flag }}" --argjson val "${{ github.event.inputs.value }}" \
