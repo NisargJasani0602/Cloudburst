@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       flag:
-        description: "Flag name (ex: enableDiscounts, showSecretMenu)"
+        description: "Flag name (eg: enableDiscounts, showSecretMenu)"
         required: true
       value:
         description: "true or false"
