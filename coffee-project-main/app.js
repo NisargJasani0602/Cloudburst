@@ -31,7 +31,7 @@ app.get('/coffees', (req, res) => {
   const availableCoffees = coffees.map(c => ({ ...c }));
 
   if (flags.showSecretMenu) {
-    availableCoffees.push({ id: 99, name: 'Caramel Espresso Shaker', price: 4 });
+    availableCoffees.push({ id: 99, name: 'Caramel Espresso Shaker', price: 5 });
     availableCoffees.push({ id: 100, name: 'Berry White Mocha', price: 5 });
     availableCoffees.push({ id: 101, name: 'Tiramisu Latte', price: 6 });
     availableCoffees.push({ id: 102, name: 'Pumpkin Chai Latte', price: 7 });
