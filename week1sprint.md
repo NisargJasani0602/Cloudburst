@@ -20,19 +20,19 @@ Set up the foundational DevOps pipeline components to enable automated builds, t
 ---
 
 ## 📆 End-of-Week Deliverables
-- Functional GitHub Actions pipeline (`ci.yml`, `cd-release.yml` placeholders).  
-- Basic Ansible playbook committed to `ansible/`.  
-- Docker image builds and pushes successfully to GHCR.  
+- Functional GitHub Actions pipeline (`ci.yml`, `cd-release.yml` placeholders).
+- Basic Ansible playbook committed to `ansible/`.
+- Docker image builds and pushes successfully to GHCR.
 - Project board linked and showing progress for all Week 1 tasks.
 
 ---
 
 ## 👥 Team Members
-- **Smeet Nagda**  
-- **Jinish Shah**  
+- **Smeet Nagda**
+- **Jinish Shah**
 - **Nisarg Jasani**
 
 ---
 
-🕒 *Sprint Duration:* Week 1 — Initial setup and CI/CD foundation.  
+🕒 *Sprint Duration:* Week 1 — Initial setup and CI/CD foundation.
 💬 *Next Sprint Focus:* Monitoring integration and hybrid burst automation trigger.

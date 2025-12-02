@@ -1,5 +1,5 @@
 
-# COFFEE PROJECT 
+# COFFEE PROJECT
 
 Assumes that you have `npm` / `node` installed.
 
@@ -26,5 +26,3 @@ npm install mocha chai supertest --save-dev
 ```
 npm test
 ```
-
-

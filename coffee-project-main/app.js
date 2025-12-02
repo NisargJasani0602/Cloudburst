@@ -8,7 +8,7 @@ const { coffees, orders } = require('./data');
 const app = express();
 
 app.use(express.json());
-app.use(express.static('public')); 
+app.use(express.static('public'));
 function getFlags() {
   const flagsPath = path.join(__dirname, 'feature-flags.json');
   try {
