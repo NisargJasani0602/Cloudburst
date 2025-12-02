@@ -1,4 +1,4 @@
 {
-    "enableDiscounts": true,
-    "showSecretMenu": true
-  }
+  "enableDiscounts": false,
+  "showSecretMenu": true
+}
