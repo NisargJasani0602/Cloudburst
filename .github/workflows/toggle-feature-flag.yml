@@ -15,10 +15,13 @@ jobs:
     runs-on: self-hosted
     permissions:
       contents: write
+      pull-requests: write
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Install jq (JSON editor)
         run: |
@@ -47,10 +50,40 @@ jobs:
 
       - name: Commit and push changes
         if: steps.update-flag.outputs.changed == 'true'
+        id: commit-and-push
+        env:
+          BRANCH_NAME: dark-launch
+          BASE_BRANCH: main
         run: |
           cd coffee-project-main
           git config user.name "GitHub Actions"
           git config user.email "actions@github.com"
+
+          git fetch origin "$BASE_BRANCH" "$BRANCH_NAME" || true
+          git checkout "$BRANCH_NAME" 2>/dev/null || git checkout -b "$BRANCH_NAME" "origin/$BASE_BRANCH"
+          git pull --ff-only origin "$BRANCH_NAME" || true
+
           git add feature-flags.json
           git commit -m "Feature flag updated: ${{ github.event.inputs.flag }} -> ${{ github.event.inputs.value }}"
-          git push
+          git push origin "$BRANCH_NAME"
+          echo "branch=$BRANCH_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Create pull request
+        if: steps.commit-and-push.outputs.branch != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_BRANCH: main
+          HEAD_BRANCH: ${{ steps.commit-and-push.outputs.branch }}
+        run: |
+          cd coffee-project-main
+          PR_TITLE="Feature flag updated: ${{ github.event.inputs.flag }} -> ${{ github.event.inputs.value }}"
+          PR_BODY="Automated feature flag update triggered by workflow_dispatch."
+
+          jq -n --arg title "$PR_TITLE" --arg head "$HEAD_BRANCH" --arg base "$BASE_BRANCH" --arg body "$PR_BODY" \
+            '{title:$title, head:$head, base:$base, body:$body}' > pr.json
+
+          curl -sS -X POST \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Content-Type: application/json" \
+            -d @pr.json \
+            "https://api.github.com/repos/${{ github.repository }}/pulls"
