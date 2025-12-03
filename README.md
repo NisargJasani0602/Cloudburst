@@ -1,4 +1,9 @@
-# CloudBurst — Automated DevOps Pipeline & CPU-Based Autoscaling System <img src="media/cloudburst_logo.png" alt="CloudBurst logo" width="120" style="vertical-align: middle; margin-left: 8px;" />
+# CloudBurst — Automated DevOps Pipeline & CPU-Based Autoscaling System 
+
+<img src="media/cloudburst_logo.png" 
+     alt="CloudBurst logo" 
+     width="120" 
+     style="vertical-align: middle; margin-left: 8px; border-radius: 50%;" />
 
 CloudBurst is an event-driven DevOps pipeline designed to deliver secure, reliable, and scalable deployment of containerized applications. The system runs workloads on standard, on-premise infrastructure but automatically “bursts” to the NCSU VCL Kubernetes cluster when CPU usage exceeds defined thresholds. Through a combination of CI/CD automation, Infrastructure-as-Code, real-time monitoring, and multi-layered security scanning, CloudBurst demonstrates a robust and production-grade DevOps workflow.
 
