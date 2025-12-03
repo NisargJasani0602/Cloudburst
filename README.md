@@ -1,11 +1,4 @@
-# CloudBurst <img src="media/cloudburst_logo.png" alt="CloudBurst logo" width="64" style="vertical-align: middle; margin-left: 8px;" />
-
-## 👥 Team Members
-- **Smeet Nagda snagda**
-- **Jinish Shah jrshah6**
-- **Nisarg Jasani nhjasani**
-
-# CloudBurst — Automated DevOps Pipeline & CPU-Based Autoscaling System
+# CloudBurst — Automated DevOps Pipeline & CPU-Based Autoscaling System <img src="media/cloudburst_logo.png" alt="CloudBurst logo" width="120" style="vertical-align: middle; margin-left: 8px;" />
 
 CloudBurst is an event-driven DevOps pipeline designed to deliver secure, reliable, and scalable deployment of containerized applications. The system runs workloads on standard, on-premise infrastructure but automatically “bursts” to the NCSU VCL Kubernetes cluster when CPU usage exceeds defined thresholds. Through a combination of CI/CD automation, Infrastructure-as-Code, real-time monitoring, and multi-layered security scanning, CloudBurst demonstrates a robust and production-grade DevOps workflow.
 
@@ -20,8 +13,6 @@ The system integrates GitHub Actions, Docker Hub, Ansible-based provisioning, Pr
 ### System Architecture Diagram
 
 <p align="center"> <img src="media/cloudburst_architecture.png" width="720" /> </p>
-
-## 3. Key Features
 
 ## 3. Key Features
 
@@ -207,6 +198,10 @@ ansible-playbook -i ansible/hosts.ini ansible/ansible-playbook.yaml
 - Implementing Horizontal Pod Autoscaling (HPA) with custom metrics
 - Deploying burst-webhook as a serverless function for lower overhead
 
+## 11. 👥 Team Members
+- **Smeet Nagda snagda**
+- **Jinish Shah jrshah6**
+- **Nisarg Jasani nhjasani**
 
-## 11. License
+## 12. License
 Academic use for CSC 519 — DevOps at NC State University.
