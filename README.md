@@ -1,17 +1,17 @@
-# CloudBurst — Automated DevOps Pipeline & CPU-Based Autoscaling System 
+# ☁️ CloudBurst — Automated DevOps Pipeline & CPU-Based Autoscaling System 
 
 <img src="media/cloudburst_logo.png" 
      alt="CloudBurst logo" 
      width="120" 
-     style="vertical-align: middle; margin-left: 8px; border-radius: 50%;" />
+     style="vertical-align: middle; margin-left: 8px; border-radius: 9999px;" />
 
 CloudBurst is an event-driven DevOps pipeline designed to deliver secure, reliable, and scalable deployment of containerized applications. The system runs workloads on standard, on-premise infrastructure but automatically “bursts” to the NCSU VCL Kubernetes cluster when CPU usage exceeds defined thresholds. Through a combination of CI/CD automation, Infrastructure-as-Code, real-time monitoring, and multi-layered security scanning, CloudBurst demonstrates a robust and production-grade DevOps workflow.
 
-## 1. Overview
+## 📌 Overview
 
 CloudBurst automates the entire software delivery lifecycle—from code linting and unit testing to deployment, monitoring, and autoscaling. The platform ensures that only tested, secure, and validated code reaches production, and integrates real-time CPU metrics to trigger replica scaling on the VCL cluster without manual intervention. This hybrid design allows on-premise resources to handle normal traffic while leveraging cloud resources during high-load events.
 
-## 2. Architecture
+## 🏗️ Architecture
 
 The system integrates GitHub Actions, Docker Hub, Ansible-based provisioning, Prometheus monitoring, Alertmanager webhooks, and Kubernetes scaling actions.
 
@@ -19,7 +19,7 @@ The system integrates GitHub Actions, Docker Hub, Ansible-based provisioning, Pr
 
 <p align="center"> <img src="media/cloudburst_architecture.png" width="720" /> </p>
 
-## 3. Key Features
+## ⭐ Key Features
 
 ### **Automated CI Pipeline**
 - **Linting:**  
@@ -66,7 +66,7 @@ The system integrates GitHub Actions, Docker Hub, Ansible-based provisioning, Pr
 
 ---
 
-## 4. Pipeline Flow
+## 🔄 Pipeline Flow
 
 ### **Developer Phase**
 - Developers create feature branches  
@@ -114,7 +114,7 @@ When changes are merged:
 ### **Unburst**
 - When CPU stabilizes, the `unburst.yml` workflow scales down replicas 
 
-## 5. Repository Structure
+## 📁 Repository Structure
 
 ```
 CloudBurst/
@@ -152,7 +152,7 @@ CloudBurst/
 └── README.md
 ```
 
-## 6. Running Locally
+## 🖥️ Running Locally
 
 ```
 cd coffee-project-main
@@ -170,7 +170,7 @@ npm test
 docker build -t cloudburst-app .
 ```
 
-## 7. Deploying to Kubernetes (VCL)
+## 🚀 Deploying to Kubernetes (VCL)
 
 Apply base deployment and monitoring rules
 
@@ -181,13 +181,13 @@ kubectl apply -f cloudburst-prometheus-rules.yaml
 kubectl apply -f alertmanager-cloudburst-config.yaml
 ```
 
-## 8. Provisioning with Ansible
+## ⚙️ Provisioning with Ansible
 
 ```
 ansible-playbook -i ansible/hosts.ini ansible/ansible-playbook.yaml
 ```
 
-## 9. Security Components
+## 🔐 Security Components
 
 - CodeQL static analysis
 - npm audit for supply-chain vulnerabilities
@@ -196,17 +196,17 @@ ansible-playbook -i ansible/hosts.ini ansible/ansible-playbook.yaml
 - All tokens and configs stored in GitHub Secrets
 - Webhook PAT restricted to repository dispatch only
 
-## 10. Future Enhancements
+## 📈 Future Enhancements
 
 - Integrating a message queue (RabbitMQ / Kafka) instead of direct webhooks
 - Adding richer Grafana dashboards (latency, restarts, network throughput)
 - Implementing Horizontal Pod Autoscaling (HPA) with custom metrics
 - Deploying burst-webhook as a serverless function for lower overhead
 
-## 11. 👥 Team Members
+## 👥 Team Members
 - **Smeet Nagda snagda**
 - **Jinish Shah jrshah6**
 - **Nisarg Jasani nhjasani**
 
-## 12. License
+## License
 Academic use for CSC 519 — DevOps at NC State University.
